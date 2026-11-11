@@ -12,6 +12,7 @@
   color-scheme:dark;
 }
 html,body{background:var(--bg)}
+*,*::before,*::after{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 body{
   color:var(--ink);font-family:var(--ui);font-size:20px;line-height:1.2;
   padding-block:12px;
@@ -113,6 +114,23 @@ canvas{display:block;width:100%;height:auto;aspect-ratio:16/9;image-rendering:pi
  .picks.menu{grid-template-columns:repeat(5,minmax(0,1fr))}
  .stgs{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
+body.fl{padding:0;margin:0;overflow:hidden}
+body.fl .wrap{position:fixed;top:0;left:0;width:var(--lw);height:var(--lh);max-width:none;gap:0;align-items:center;overflow:auto;transform-origin:0 0}
+body.fl1 .wrap{transform:translateX(var(--lh)) rotate(90deg)}
+body.fl2 .wrap{transform:translateY(var(--lw)) rotate(-90deg)}
+body.fl .stage{width:min(var(--lw),calc(var(--lh)*16/9));border-width:0;box-shadow:none;margin:auto}
+body.fl .stage.menu{width:100%;max-width:640px}
+body.fl .bar,body.fl .help,body.fl .guide,body.fl .rot{display:none}
+body.fl .pad{display:none}
+body.fl .wrap.play .pad{display:flex;position:absolute;left:10px;right:10px;bottom:8px;z-index:4;pointer-events:none;--bs:clamp(36px,calc(var(--uh)*11.5),54px)}
+body.fl1 .wrap.play .pad{left:max(10px,env(safe-area-inset-top,0px));right:max(10px,env(safe-area-inset-bottom,0px))}
+body.fl2 .wrap.play .pad{left:max(10px,env(safe-area-inset-bottom,0px));right:max(10px,env(safe-area-inset-top,0px))}
+body.fl .wrap.play .pad>*{pointer-events:auto;opacity:.8}
+body.fl .wrap.play .pz{display:block}
+body.fl .ov h1{font-size:clamp(12px,calc(var(--uh)*4),22px)}
+body.fl .picks.menu,body.fl .tabs,body.fl .stgs{max-width:560px}
+body.fl .picks.menu{grid-template-columns:repeat(5,minmax(0,1fr))}
+body.fl .stgs{grid-template-columns:repeat(4,minmax(0,1fr))}
 .nt{width:100%;max-width:420px;box-sizing:border-box;font-family:ui-monospace,Menlo,monospace;font-size:16px;line-height:1.3;color:var(--ink);background:#0d0716;border:2px solid #4a2f85;padding:6px;resize:none;word-break:break-all}
 textarea,input{-webkit-user-select:text!important;user-select:text!important;-webkit-touch-callout:default;touch-action:auto;pointer-events:auto}
 .nt.in{border-color:var(--gold);background:#1a0f2c}
@@ -215,8 +233,8 @@ var NEUT={l:0,r:0,jump:0,punch:0,kick:0,special:0,block:0,crouch:0,push:0};
 /* ---------- Etat global ---------- */
 var FR=0,P=null,E=null,proj=[],parts=[],rings=[],lastPick=0,lastEnemy=-1;
 var S={phase:'menu',t:0,round:1,time:60,tf:0,shake:0,flash:0,koText:'',pKO:false,diff:1,mode:'fight',paused:false,mute:false,zoom:1,map:0,mapSel:-1,music:true,net:null};
-try{var sv=JSON.parse(localStorage.getItem('duelmaudit')||'{}');if(sv.diff>=0&&sv.diff<=2)S.diff=sv.diff;S.mute=!!sv.mute;S.music=sv.music!==false;if(sv.mapSel>=-1&&sv.mapSel<20)S.mapSel=sv.mapSel;}catch(e){}
-function save(){try{localStorage.setItem('duelmaudit',JSON.stringify({diff:S.diff,mute:S.mute,music:S.music,mapSel:S.mapSel}));}catch(e){}}
+try{var sv=JSON.parse(localStorage.getItem('duelmaudit')||'{}');if(sv.diff>=0&&sv.diff<=2)S.diff=sv.diff;S.mute=!!sv.mute;S.music=sv.music!==false;if(sv.mapSel>=-1&&sv.mapSel<20)S.mapSel=sv.mapSel;if(sv.scr>=0&&sv.scr<=2)S.scr=sv.scr;}catch(e){}
+function save(){try{localStorage.setItem('duelmaudit',JSON.stringify({diff:S.diff,mute:S.mute,music:S.music,mapSel:S.mapSel,scr:S.scr|0}));}catch(e){}}
 var amb=[];(function(){for(var i=0;i<34;i++)amb.push({x:Math.random()*W,y:Math.random()*H,vx:-.15-Math.random()*.35,vy:.1+Math.random()*.3,z:Math.random()<.3?2:1,ph:Math.random()*6});})();
 
 function mk(ch,x,dir,isP){
@@ -243,6 +261,17 @@ Array.prototype.forEach.call(document.querySelectorAll('.acts button'),function(
  b.addEventListener('lostpointercapture',up);
  b.addEventListener('contextmenu',function(e){e.preventDefault();});
 });
+/* ---------- Mode horizontal force (si l'ecran ne pivote pas tout seul) ---------- */
+function scrApply(){
+ var b=document.body,m=S.scr|0,w=window.innerWidth,h=window.innerHeight,on=m>0&&h>=w;
+ b.classList.toggle('fl',on);b.classList.toggle('fl1',on&&m===1);b.classList.toggle('fl2',on&&m===2);
+ if(on){b.style.setProperty('--lw',h+'px');b.style.setProperty('--lh',w+'px');b.style.setProperty('--uh',(w/100)+'px');b.style.setProperty('--uw',(h/100)+'px');}
+ else{['--lw','--lh','--uh','--uw'].forEach(function(k){b.style.removeProperty(k);});}
+}
+function scrLabel(){return ['ECRAN : VERTICAL','ECRAN : HORIZONTAL ◀','ECRAN : HORIZONTAL ▶'][S.scr|0];}
+function toggleScr(){S.scr=((S.scr|0)+1)%3;save();scrApply();}
+window.addEventListener('resize',scrApply);
+window.addEventListener('orientationchange',function(){setTimeout(scrApply,150);});
 var dp=document.getElementById('dpad'),dpB=dp.querySelectorAll('button'),dpPtr=null,dpZone=-1;
 function dpSet(z){
  if(z===dpZone)return;
@@ -255,9 +284,12 @@ function dpSet(z){
  for(var i=0;i<dpB.length;i++)dpB[i].classList.toggle('on',i===z);
 }
 function dpAt(e){
- var r=dp.getBoundingClientRect();
- var col=Math.max(0,Math.min(2,Math.floor((e.clientX-r.left)/r.width*3)));
- var row=Math.max(0,Math.min(1,Math.floor((e.clientY-r.top)/r.height*2)));
+ var r=dp.getBoundingClientRect(),cl=document.body.classList,fx,fy;
+ if(cl.contains('fl1')){fx=(e.clientY-r.top)/r.height;fy=(r.right-e.clientX)/r.width;}
+ else if(cl.contains('fl2')){fx=(r.bottom-e.clientY)/r.height;fy=(e.clientX-r.left)/r.width;}
+ else{fx=(e.clientX-r.left)/r.width;fy=(e.clientY-r.top)/r.height;}
+ var col=Math.max(0,Math.min(2,Math.floor(fx*3)));
+ var row=Math.max(0,Math.min(1,Math.floor(fy*2)));
  return row*3+col;
 }
 dp.addEventListener('pointerdown',function(e){
@@ -271,6 +303,20 @@ dp.addEventListener('pointerup',dpEnd);
 dp.addEventListener('pointercancel',dpEnd);
 dp.addEventListener('lostpointercapture',dpEnd);
 dp.addEventListener('contextmenu',function(e){e.preventDefault();});
+/* ---------- Pas de zoom au double appui ni au pincement ---------- */
+['gesturestart','gesturechange','gestureend'].forEach(function(n){document.addEventListener(n,function(e){e.preventDefault();});});
+var lastTE=0,lastTX=-99,lastTY=-99;
+document.addEventListener('touchend',function(e){
+ var t=e.target,now=Date.now(),c=e.changedTouches&&e.changedTouches[0];
+ if(!t||!t.closest||t.closest('textarea,input,select,.pad'))return;
+ var x=c?c.clientX:0,y=c?c.clientY:0,quick=now-lastTE<350&&Math.abs(x-lastTX)<40&&Math.abs(y-lastTY)<40;
+ lastTE=now;lastTX=x;lastTY=y;
+ if(quick&&e.cancelable){
+  e.preventDefault();
+  var b=t.closest('button,a,.pick,.mbtn,.tab,.stg');
+  if(b)b.click();
+ }
+},{passive:false});
 var km={i:'ball',o:'ult',ArrowLeft:'left',a:'left',q:'left',ArrowRight:'right',d:'right',ArrowUp:'up',w:'up',z:'up',j:'punch',k:'kick',l:'special',ArrowDown:'crouch',s:'crouch',' ':'block',x:'block',u:'push'};
 window.addEventListener('keydown',function(e){
  if(e.target&&(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT'))return;
@@ -1306,8 +1352,9 @@ function renderTitle(){
   '<button class="mbtn" data-go="diff">NIVEAU : '+dn[S.diff]+'</button>'+
   '<button class="mbtn" data-go="snd">SON : '+(S.mute?'NON':'OUI')+'</button>'+
   '<button class="mbtn" data-go="mus">MUSIQUE : '+(S.music?'OUI':'NON')+'</button>'+
-  '<button class="mbtn" data-go="guide">GUIDE</button></div>'+
-  '<p class="rot">Astuce : tourne ton téléphone en horizontal pour une arène plus grande.</p>';
+  '<button class="mbtn" data-go="guide">GUIDE</button>'+
+  '<button class="mbtn wide" data-go="scr">'+scrLabel()+'</button></div>'+
+  '<p class="rot">Pour jouer en horizontal : touche ECRAN, choisis la flèche, puis tourne ton téléphone de ce côté (◀ : haut du téléphone vers la gauche, ▶ : vers la droite).</p>';
 }
 function showStages(){
  var html='<h1>TERRAIN</h1><p>Choisis le champ de bataille</p><div class="stgs"><button class="stg" data-st="-1" aria-pressed="'+(S.mapSel<0)+'"><span class="rnd">?</span><b>ALEATOIRE</b></button>';
@@ -1336,6 +1383,7 @@ function showPause(){
   '<button class="pick" data-act="resume"><b>REPRENDRE</b></button>'+
   '<button class="pick" data-go="snd"><b>SON : '+(S.mute?'NON':'OUI')+'</b></button>'+
   '<button class="pick" data-go="mus"><b>MUSIQUE : '+(S.music?'OUI':'NON')+'</b></button>'+
+  '<button class="pick" data-go="scr"><b>'+scrLabel()+'</b></button>'+
   '<button class="pick" data-act="menu"><b>PERSONNAGES</b></button>'+
   '<button class="pick" data-act="title"><b>MENU</b></button></div>';
 }
@@ -1366,6 +1414,7 @@ ov.addEventListener('click',function(e){
  else if(go==='diff'){S.diff=(S.diff+1)%3;save();renderTitle();}
  else if(go==='snd'){toggleSound();if(S.paused)showPause();else renderTitle();}
  else if(go==='mus'){toggleMusic();if(S.paused)showPause();else renderTitle();}
+ else if(go==='scr'){toggleScr();if(S.paused)showPause();else renderTitle();}
  else if(go==='stages'){showStages();}
  else if(go==='online'){if(window.__online)window.__online();}
  else if(go==='guide'){var gd=document.getElementById('guide');gd.open=true;if(gd.scrollIntoView)gd.scrollIntoView({behavior:'smooth',block:'start'});}
@@ -2370,6 +2419,7 @@ function netUI(no){
  else if(no==='back')showOnline();
 }
 window.__online=showOnline;
+scrApply();
 
 /* ---------- Boucle ---------- */
 var last=0,acc=0,sk=0;
@@ -2384,7 +2434,7 @@ document.getElementById('gbody').innerHTML=
  '<p><b>Croix directionnelle.</b> Garde le doigt dessus et glisse pour changer de direction. ▲ saute, ↖ et ↗ sautent en avançant, ▼ t’accroupit : tu évites les coups de poing et les boules, mais pas les pieds.</p>'+
  '<p><b>ONDE.</b> Une onde de choc qui repousse l’adversaire même s’il garde, détruit les petits projectiles proches et casse les objets du décor.</p>'+
  '<p><b>En ligne.</b> Un joueur choisit CREER UNE PARTIE, écrit un code (ou garde celui proposé) et le donne à son ami. L’ami choisit REJOINDRE et tape le même code : la connexion démarre toute seule. Chacun garde la page ouverte. Si le réseau bloque le code court, le MODE MANUEL échange deux longs codes par message. Si ça n’aboutit pas, essayez sur le même wifi ou avec un autre réseau.</p>'+
- '<p><b>Terrain, musique, écran large.</b> Choisis ton terrain parmi 20 depuis le menu principal. Tourne le téléphone en horizontal pour agrandir l’arène : les commandes passent par-dessus l’écran. La musique se coupe avec MUSIQUE.</p>'+
+ '<p><b>Terrain, musique, écran large.</b> Choisis ton terrain parmi 20 depuis le menu principal. Tourne le téléphone en horizontal pour agrandir l’arène : les commandes passent par-dessus l’écran. Si l’écran ne pivote pas tout seul, touche ECRAN dans le menu (ou dans la pause) : choisis HORIZONTAL ◀ si tu tournes le haut du téléphone vers la gauche, ▶ vers la droite. La musique se coupe avec MUSIQUE.</p>'+
  '<p><b>Décor.</b> Casse les caisses (+vie), les cristaux (+jauge) et les tonneaux : ils explosent et blessent l’adversaire proche. De nouveaux objets réapparaissent avec le temps.</p>'+
  '<p><b>Adversaire.</b> Contre l’IA, tu choisis d’abord ton combattant, puis ton adversaire parmi tous les héros, anti-héros et vilains, ou ADVERSAIRE ALEATOIRE. Tu peux même choisir le même combattant que toi : il aura d’autres couleurs. REJOUER garde le même duel.</p>'+
  '<p><b>Lévitation.</b> Salomon peut flotter : saute, puis appuie encore sur ▲ pour léviter environ 3 secondes. Il avance en l’air, frappe, lance des boules d’énergie, un sort ou même son ultime. ▲ le fait monter un peu, ▼ le fait redescendre. Les coups de pied et les vagues au sol ne l’atteignent pas quand il flotte.</p>'+
