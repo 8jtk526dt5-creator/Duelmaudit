@@ -1,5 +1,6 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><link rel="icon" type="image/png" href="favicon.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-title" content="Duel Maudit"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Duel Maudit</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
 <style>
@@ -24,7 +25,9 @@ body{
 .wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
 .stage{position:relative;border:2px solid #3a2466;box-shadow:0 0 0 2px #000,0 0 28px rgba(139,92,255,.35);background:#000}
 canvas{display:block;width:100%;height:auto;aspect-ratio:16/9;image-rendering:pixelated;image-rendering:crisp-edges}
-.ov{position:absolute;inset:0;background:rgba(10,4,20,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:8px;text-align:center;overflow:auto}
+.ov{position:absolute;inset:0;background:rgba(10,4,20,.9);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:8px;padding:8px;text-align:center;overflow:auto}
+.ov>:first-child{margin-top:auto}
+.ov>:last-child{margin-bottom:auto}
 .ov h1{margin:0;font-family:var(--px);font-weight:400;font-size:clamp(14px,5vw,30px);letter-spacing:1px;color:var(--ink);text-shadow:2px 2px 0 var(--blood),4px 4px 0 #000;text-wrap:balance}
 .ov h1.win{text-shadow:2px 2px 0 var(--gold),4px 4px 0 #000}
 .ov p{margin:0;color:var(--dim);font-size:clamp(16px,3.4vw,22px)}
@@ -308,6 +311,24 @@ dp.addEventListener('contextmenu',function(e){e.preventDefault();});
 var padEl=document.getElementById('pad');
 ['touchstart','touchmove','touchend'].forEach(function(n){padEl.addEventListener(n,function(e){if(e.cancelable)e.preventDefault();},{passive:false});});
 ['gesturestart','gesturechange','gestureend'].forEach(function(n){document.addEventListener(n,function(e){e.preventDefault();});});
+/* En combat (classe .play) : on annule chaque appui hors menus -> iOS ne peut plus lancer de zoom, meme dans le vide autour de la manette.
+   Les menus (.ov) et les champs de saisie gardent leur comportement normal ; les boutons du haut (pause, son, musique) recoivent un clic synthetique. */
+var plTap=null;
+document.addEventListener('touchstart',function(e){
+ var w=document.querySelector('.wrap'),t=e.target;
+ plTap=null;
+ if(!w||!w.classList.contains('play')||!t||!t.closest||t.closest('.ov,textarea,input,select'))return;
+ if(e.cancelable)e.preventDefault();
+ var b=t.closest('button');
+ if(b&&e.touches.length===1&&!b.closest('.pad'))plTap={b:b,x:e.touches[0].clientX,y:e.touches[0].clientY};
+},{passive:false});
+document.addEventListener('touchend',function(e){
+ var tp=plTap;plTap=null;
+ if(!tp)return;
+ e.__pl=1;
+ var c=e.changedTouches&&e.changedTouches[0];
+ if(c&&Math.abs(c.clientX-tp.x)<14&&Math.abs(c.clientY-tp.y)<14)tp.b.click();
+},{passive:false});
 document.addEventListener('touchstart',function(e){
  if(e.touches&&e.touches.length>1&&e.cancelable&&!(e.target&&e.target.closest&&e.target.closest('textarea,input,select')))e.preventDefault();
 },{passive:false});
@@ -315,7 +336,7 @@ document.addEventListener('touchmove',function(e){if(e.scale&&e.scale!==1&&e.can
 var lastTE=0,lastTX=-99,lastTY=-99;
 document.addEventListener('touchend',function(e){
  var t=e.target,now=Date.now(),c=e.changedTouches&&e.changedTouches[0];
- if(!t||!t.closest||t.closest('textarea,input,select,.pad'))return;
+ if(e.__pl||!t||!t.closest||t.closest('textarea,input,select,.pad'))return;
  var x=c?c.clientX:0,y=c?c.clientY:0,quick=now-lastTE<350&&Math.abs(x-lastTX)<50&&Math.abs(y-lastTY)<50;
  lastTE=now;lastTX=x;lastTY=y;
  if(quick&&e.cancelable){
