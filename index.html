@@ -12,13 +12,13 @@
   color-scheme:dark;
 }
 html,body{background:var(--bg)}
-*,*::before,*::after{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+*,*::before,*::after{touch-action:manipulation;touch-action:pan-x pan-y;-webkit-tap-highlight-color:transparent}
 body{
   color:var(--ink);font-family:var(--ui);font-size:20px;line-height:1.2;
   padding-block:12px;
   padding-left:max(16px,env(safe-area-inset-left,0px));
   padding-right:max(16px,env(safe-area-inset-right,0px));
-  touch-action:manipulation;
+  touch-action:manipulation;touch-action:pan-x pan-y;
 }
 .wrap *:not(textarea):not(input):not(.ov):not(.stage){-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
@@ -308,6 +308,10 @@ dp.addEventListener('contextmenu',function(e){e.preventDefault();});
 var padEl=document.getElementById('pad');
 ['touchstart','touchmove','touchend'].forEach(function(n){padEl.addEventListener(n,function(e){if(e.cancelable)e.preventDefault();},{passive:false});});
 ['gesturestart','gesturechange','gestureend'].forEach(function(n){document.addEventListener(n,function(e){e.preventDefault();});});
+document.addEventListener('touchstart',function(e){
+ if(e.touches&&e.touches.length>1&&e.cancelable&&!(e.target&&e.target.closest&&e.target.closest('textarea,input,select')))e.preventDefault();
+},{passive:false});
+document.addEventListener('touchmove',function(e){if(e.scale&&e.scale!==1&&e.cancelable)e.preventDefault();},{passive:false});
 var lastTE=0,lastTX=-99,lastTY=-99;
 document.addEventListener('touchend',function(e){
  var t=e.target,now=Date.now(),c=e.changedTouches&&e.changedTouches[0];
