@@ -347,7 +347,7 @@ var plTap=null;
 document.addEventListener('touchstart',function(e){
  var w=document.querySelector('.wrap'),t=e.target;
  plTap=null;
- if(!w||!w.classList.contains('play')||!t||!t.closest||t.closest('.ov,textarea,input,select'))return;
+ if(!w||!w.classList.contains('play')||!t||!t.closest||t.closest('.ov,textarea,input,select,.trn,.help,.guide'))return;
  if(e.cancelable)e.preventDefault();
  var b=t.closest('button');
  if(b&&e.touches.length===1&&!b.closest('.pad'))plTap={b:b,x:e.touches[0].clientX,y:e.touches[0].clientY};
