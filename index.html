@@ -777,8 +777,8 @@ function phys(f){
   if(was&&f.vy>2){dust(f.x,GY,8);f.land=7;snd('land',f.vy);}
   f.y=GY;f.vy=0;
  }
- if(f.x<8){f.x=8;}
- if(f.x>WORLD_W-8){f.x=WORLD_W-8;}
+ if(f.x<3){f.x=3;}
+ if(f.x>WORLD_W-3){f.x=WORLD_W-3;}
 }
 function aimVy(px,py,vx,o){
  var fr=Math.max(10,Math.abs((o.x-px)/vx));
@@ -1357,7 +1357,7 @@ function updCam(snap){
  camX=snap?t:camX+(t-camX)*.14;
 }
 function leash(){
- var d=E.x-P.x,ex=Math.abs(d)-(W-34),s=d>=0?1:-1;
+ var d=E.x-P.x,ex=Math.abs(d)-(W-14),s=d>=0?1:-1;
  if(ex>0&&!P.ko&&!E.ko){P.x+=s*ex/2;E.x-=s*ex/2;}
 }
 function lagHp(){
