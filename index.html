@@ -101,13 +101,31 @@ canvas{display:block;width:100%;height:auto;aspect-ratio:16/9;image-rendering:pi
 .stg .rnd{font-family:var(--px);font-size:22px;color:var(--gold)}
 .stg b{font-family:var(--px);font-weight:400;font-size:7px;line-height:1.3;min-height:2.6em;display:flex;align-items:center;text-align:center}
 .rot{font-size:16px}
+.trn{width:100%;max-width:420px;box-sizing:border-box;background:var(--panel);border:2px solid #3a2466;padding:8px 10px;display:flex;flex-direction:column;gap:8px;font-size:18px}
+.trn[hidden]{display:none}
+.tr-row{display:flex;flex-wrap:wrap;gap:6px}
+.trn button{font-family:var(--px);font-size:7px;line-height:1.3;color:var(--ink);background:var(--panel2);border:2px solid #4a2f85;padding:7px 5px;cursor:pointer;box-shadow:0 3px 0 #000;flex:1 1 auto}
+.trn button:active{transform:translateY(2px);box-shadow:0 1px 0 #000}
+.trn button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.trn h4{font-family:var(--px);font-weight:400;font-size:9px;margin:4px 0 0;color:var(--gold)}
+.trn p{margin:0}
+.trn-dum{font-family:var(--px);font-size:9px;color:var(--gold)}
+.trn-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;text-align:center;color:var(--dim);font-size:14px}
+.trn-stats b{display:block;font-family:var(--px);font-weight:400;font-size:12px;color:var(--ink);margin-top:3px}
+.trn ol,.trn ul{margin:0;padding-left:4px;list-style:none;display:flex;flex-direction:column;gap:3px}
+.trn li{color:var(--dim)}
+.trn li.done{color:#7affd8}
+.trn li.cur{color:var(--gold)}
+.trn li b{font-weight:400;color:var(--ink)}
+.pad button.hint{outline:2px solid var(--gold);outline-offset:2px;animation:tr-blink .6s steps(2,jump-none) infinite}
+@keyframes tr-blink{50%{outline-color:transparent}}
 .pz{display:none;position:absolute;top:13%;left:50%;transform:translateX(-50%);width:34px;height:28px;font-size:13px;color:var(--ink);background:rgba(27,16,48,.65);border:2px solid #4a2f85;cursor:pointer;padding:0;z-index:3}
 @media (orientation:landscape) and (max-height:620px){
  body{padding:0}
  .wrap{max-width:none;gap:0;align-items:center}
  .stage{width:min(100vw,calc(100vh*16/9));border-width:0;box-shadow:none;margin:0 auto}
  .stage.menu{width:100%;max-width:640px}
- .bar,.help,.guide,.rot{display:none}
+ .bar,.help,.guide,.rot,.trn{display:none}
  .pad{display:none}
  .wrap.play .pad{display:flex;position:fixed;left:max(10px,env(safe-area-inset-left,0px));right:max(10px,env(safe-area-inset-right,0px));bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:4;pointer-events:none;--bs:clamp(36px,11.5vh,54px)}
  .wrap.play .pad>*{pointer-events:auto;opacity:.8}
@@ -123,7 +141,7 @@ body.fl1 .wrap{transform:translateX(var(--lh)) rotate(90deg)}
 body.fl2 .wrap{transform:translateY(var(--lw)) rotate(-90deg)}
 body.fl .stage{width:min(var(--lw),calc(var(--lh)*16/9));border-width:0;box-shadow:none;margin:auto}
 body.fl .stage.menu{width:100%;max-width:640px}
-body.fl .bar,body.fl .help,body.fl .guide,body.fl .rot{display:none}
+body.fl .bar,body.fl .help,body.fl .guide,body.fl .rot,body.fl .trn{display:none}
 body.fl .pad{display:none}
 body.fl .wrap.play .pad{display:flex;position:absolute;left:10px;right:10px;bottom:8px;z-index:4;pointer-events:none;--bs:clamp(36px,calc(var(--uh)*11.5),54px)}
 body.fl1 .wrap.play .pad{left:max(10px,env(safe-area-inset-top,0px));right:max(10px,env(safe-area-inset-bottom,0px))}
@@ -177,6 +195,17 @@ input.nt{height:auto}
   <div class="help">
     <span><b>But :</b> gagne 2 manches. Chaque coup donné ou reçu charge ta jauge bleue ; à 40 tu peux lancer le SORT propre à ton combattant, à 100 l’ULTIME.</span>
     <span><b>Clavier :</b> ←→ bouger · ↑ sauter · ↓ s’accroupir · J coup · K pied · U onde · I boule · L sort · O ultime · Espace garde · P pause</span>
+  </div>
+  <div class="trn" id="trn" hidden>
+    <div class="tr-row"><button type="button" data-trn="dummy">CHANGER LE PANTIN</button><button type="button" data-trn="fill">JAUGE PLEINE</button><button type="button" data-trn="reset">RESET COMPTEUR</button></div>
+    <p class="trn-dum" id="trnDum">PANTIN : IMMOBILE</p>
+    <div class="trn-stats"><span>COMBO<b id="tC">0</b></span><span>MEIL.<b id="tB">0</b></span><span>DÉGÂTS<b id="tD">0</b></span><span>COUPS<b id="tH">0</b></span><span>REÇU<b id="tT">0</b></span></div>
+    <h4>LEÇONS</h4>
+    <p id="tLt"></p>
+    <ol id="tLs"></ol>
+    <div class="tr-row"><button type="button" data-trn="skip">PASSER CETTE LEÇON</button><button type="button" data-trn="restart">RECOMMENCER</button></div>
+    <h4>COUPS DE <span id="tMn"></span></h4>
+    <ul id="tMl"></ul>
   </div>
   <details class="guide" id="guide"><summary>GUIDE DU COMBATTANT</summary><div id="gbody"></div></details>
 </div>
@@ -1402,6 +1431,109 @@ function aiIn(f,o){
  return i;
 }
 
+/* ---------- Mode entrainement : lecons guidees, pantin reglable, compteurs, liste des coups ---------- */
+var TR={dummy:'still',done:{},lesson:0,hits:0,dmg:0,taken:0,combo:0,best:0,last:-999};
+var TRD=[['still','IMMOBILE'],['block','GARDE'],['jump','SAUTE'],['attack','FRAPPE']];
+var LESSONS=[
+ {k:'walk',s:'Avancer et reculer',t:'Avance et recule vers l’adversaire avec ◀ ▶ (flèches ← →).',h:['left','right']},
+ {k:'jump',s:'Sauter',t:'Saute avec ▲ (flèche ↑). Pour éviter les vagues au sol, saute.',h:['jump']},
+ {k:'crouch',s:'S’accroupir',t:'Accroupis-toi avec ▼ (flèche ↓) : tu évites les coups de poing.',h:['crouch']},
+ {k:'punch',s:'COUP',t:'Frappe avec COUP (J). Rapide, portée courte.',h:['punch']},
+ {k:'kick',s:'PIED',t:'Frappe avec PIED (K). Plus lent, mais plus fort.',h:['kick']},
+ {k:'block',s:'Garder (GARDE)',t:'Le pantin frappe : garde-toi avec GARDE (Espace). Il passe en FRAPPE pour cette leçon.',h:['block']},
+ {k:'push',s:'ONDE',t:'ONDE (U) repousse l’adversaire, même s’il garde.',h:['push']},
+ {k:'combo',s:'3 coups d’affilée',t:'Enchaîne 3 coups d’affilée, sans attendre entre eux.',h:['punch','kick']},
+ {k:'ball',s:'BOULE',t:'BOULE (I) : une énergie envoyée au loin. Coûte 8 de jauge (remplie pour toi).',h:['ball']},
+ {k:'special',s:'SORT',t:'SORT (L) : ta capacité propre. Coûte 40 de jauge (remplie pour toi).',h:['special']},
+ {k:'ult',s:'ULTIME',t:'ULTIME (O) : ton coup le plus fort. Coûte 100 de jauge (remplie pour toi).',h:['ult']}
+];
+var TRH={left:'#dpad button:nth-child(4)',right:'#dpad button:nth-child(6)',jump:'#dpad button:nth-child(2)',crouch:'#dpad button:nth-child(5)',punch:'[data-k=punch]',kick:'[data-k=kick]',block:'[data-k=block]',push:'[data-k=push]',ball:'[data-k=ball]',special:'[data-k=special]',ult:'[data-k=ult]'};
+function trnCur(){var i=LESSONS.findIndex(function(l){return !TR.done[l.k];});return i<0?LESSONS.length:i;}
+function trnReset(){
+ TR.hits=TR.dmg=TR.taken=TR.combo=TR.best=0;TR.last=-999;
+ var c=P.ch;
+ document.getElementById('tMn').textContent=c.name;
+ document.getElementById('tMl').innerHTML=
+  '<li><b>COUP (J)</b> rapide, portée courte.</li>'+
+  '<li><b>PIED (K)</b> lent, plus fort, touche plus bas.</li>'+
+  '<li><b>ONDE (U)</b> repousse l’adversaire, même en garde.</li>'+
+  '<li><b>GARDE (Espace)</b> réduit les dégâts. Un coup de pied ou un sort peut encore passer.</li>'+
+  '<li><b>BOULE (I)</b> projectile à distance, 8 de jauge.</li>'+
+  '<li><b>SORT (L) : '+c.sp.n+'</b>, 40 de jauge. '+c.sp.d+'</li>'+
+  '<li><b>ULTIME (O) : '+c.ult+'</b>, 100 de jauge. '+(c.ud||'')+'</li>';
+}
+function trnIn(){
+ var i={l:0,r:0,jump:0,punch:0,kick:0,special:0,block:0,crouch:0,push:0,ball:0,ult:0};
+ var L=LESSONS[TR.lesson],m=(L&&L.k==='block')?'attack':TR.dummy,dx=P.x-E.x;
+ if(m==='block')i.block=1;
+ else if(m==='jump'){if(FR%80===0)i.jump=1;}
+ else if(m==='attack'){
+  if(Math.abs(dx)>26)i[dx>0?'r':'l']=1;
+  else if(FR%64===0)i.punch=1;
+  else if(FR%64===32)i.kick=1;
+ }
+ return i;
+}
+function trnTick(){
+ var dd=E.max-E.hp,tk=P.max-P.hp,L;
+ TR.lesson=trnCur();L=LESSONS[TR.lesson];
+ if(dd>0){TR.hits++;TR.dmg+=dd;TR.combo=(FR-TR.last<=45)?TR.combo+1:1;TR.last=FR;if(TR.combo>TR.best)TR.best=TR.combo;}
+ else if(FR-TR.last>45)TR.combo=0;
+ if(tk>0)TR.taken+=tk;
+ if(TR.combo>=3)TR.done.combo=1;
+ if(L){
+  if(L.k==='ball'&&P.en<8)P.en=8;
+  if(L.k==='special'&&P.en<40)P.en=40;
+  if(L.k==='ult'&&P.en<100)P.en=100;
+ }
+}
+function trnTrack(p){
+ var d=TR.done;
+ if(p.l||p.r)d.walk=1;
+ if(p.jump)d.jump=1;
+ if(P.crouch)d.crouch=1;
+ if(p.punch)d.punch=1;
+ if(p.kick)d.kick=1;
+ if(P.blk&&E.atk)d.block=1;
+ if(p.push)d.push=1;
+ if(p.ball)d.ball=1;
+ if(p.special)d.special=1;
+ if(p.ult)d.ult=1;
+}
+var trnKey='';
+function trnUpd(){
+ var pn=document.getElementById('trn'),on=S.mode==='train'&&!!P&&wrapEl.classList.contains('play'),cur,L,key,lis,i,dl,hs;
+ document.querySelectorAll('.pad button.hint').forEach(function(e){e.classList.remove('hint');});
+ if(!pn)return;
+ pn.hidden=!on;
+ if(!on)return;
+ cur=trnCur();L=LESSONS[cur];
+ function set(id,v){var e=document.getElementById(id),t=String(v);if(e.textContent!==t)e.textContent=t;}
+ set('tC',TR.combo);set('tB',TR.best);set('tD',TR.dmg);set('tH',TR.hits);set('tT',TR.taken);
+ dl=(L&&L.k==='block')?'FRAPPE (leçon)':TRD.filter(function(d){return d[0]===TR.dummy;})[0][1];
+ set('trnDum','PANTIN : '+dl);
+ set('tLt',L?(cur+1)+'/'+LESSONS.length+' · '+L.t:'Toutes les leçons sont faites. Entraîne-toi librement, ou clique RECOMMENCER.');
+ key=cur+'|'+LESSONS.map(function(l){return TR.done[l.k]?1:0;}).join('');
+ if(key!==trnKey){
+  trnKey=key;
+  document.getElementById('tLs').innerHTML=LESSONS.map(function(l,n){
+   return '<li class="'+(TR.done[l.k]?'done':(n===cur?'cur':''))+'">'+(TR.done[l.k]?'✓ ':(n===cur?'▶ ':'· '))+l.s+'</li>';
+  }).join('');
+ }
+ if(L)L.h.forEach(function(h){document.querySelectorAll(TRH[h]).forEach(function(e){e.classList.add('hint');});});
+}
+function trnClick(e){
+ var b=e.target.closest?e.target.closest('[data-trn]'):null;
+ if(!b)return;
+ var a=b.getAttribute('data-trn'),ix=0,c;
+ if(a==='dummy'){TRD.forEach(function(d,n){if(d[0]===TR.dummy)ix=n;});TR.dummy=TRD[(ix+1)%TRD.length][0];}
+ else if(a==='fill'){P.en=100;}
+ else if(a==='reset'){TR.hits=TR.dmg=TR.taken=TR.combo=TR.best=0;TR.last=-999;}
+ else if(a==='skip'){c=trnCur();if(c<LESSONS.length)TR.done[LESSONS[c].k]=1;}
+ else if(a==='restart'){TR.done={};}
+ trnUpd();
+}
+
 /* ---------- Deroulement ---------- */
 function newMatch(idx,pe){
  lastPick=idx;lastEnemy=(pe===undefined)?-1:pe;S.tab=CH[idx].side;
@@ -1412,6 +1544,7 @@ function newMatch(idx,pe){
  }
  P=mk(CH[idx],124,1,true);
  E=mk(eidx===idx?altCh(CH[eidx]):CH[eidx],196,-1,false);
+ if(S.mode==='train')trnReset();
  S.round=1;
  S.map=(S.mapSel>=0)?S.mapSel:(Math.random()*MAPS.length|0);
  ov.hidden=true;stage.classList.remove('menu');
@@ -1566,6 +1699,7 @@ document.getElementById('bPause').addEventListener('click',function(){initAudio(
 document.getElementById('bPause2').addEventListener('click',function(){initAudio();togglePause();});
 document.getElementById('bSnd').addEventListener('click',toggleSound);
 document.getElementById('bMus').addEventListener('click',toggleMusic);
+document.getElementById('trn').addEventListener('click',trnClick);
 document.addEventListener('visibilitychange',function(){
  if(document.hidden&&P&&(S.phase==='fight'||S.phase==='intro')&&!S.paused)togglePause();
 });
@@ -1642,13 +1776,14 @@ function stepCore(){
  }else if(ph==='fight'){
   var pin={l:held.left,r:held.right,block:held.block,crouch:held.crouch,push:buf.push>0,jump:buf.up>0,punch:buf.punch>0,kick:buf.kick>0,special:buf.special>0,ball:buf.ball>0,ult:buf.ult>0};
   clearPress();
-  var ein=(S.mode==='train')?NEUT:((S.net==='host')?remoteIn():aiIn(E,P));
+  var ein=(S.mode==='train')?trnIn():((S.net==='host')?remoteIn():aiIn(E,P));
   var stp=(S.stop&&S.stop.t>0)?S.stop.by:null;
   if(!stp||stp===P||P.ch.uk==='chrono')upd(P,pin,E);
   if(!stp||stp===E||E.ch.uk==='chrono')upd(E,ein,P);
   if(P.did){buf[P.did]=0;P.did=null;}
   if(S.net==='host')remoteAfter();
   for(var bk in buf){if(buf[bk]>0)buf[bk]--;}
+  if(S.mode==='train')trnTrack(pin);
   trailUpd(P);trailUpd(E);
   bUlt.classList.toggle('rdy',P.en>=100);bSp.classList.toggle('rdy',P.en>=40&&P.en<100);
   separate();leash();
@@ -1660,7 +1795,7 @@ function stepCore(){
   S.tf++;
   if(FR%30===0){[P,E].forEach(function(ff){ff.hist=ff.hist||[];ff.hist.push({hp:ff.hp,x:ff.x});if(ff.hist.length>10)ff.hist.shift();});}
   if(S.tf%540===0&&S.mode!=='train')respawnProp();
-  if(S.mode==='train'){P.hp=P.max;E.hp=E.max;P.en=Math.min(100,P.en+.5);}
+  if(S.mode==='train'){trnTick();P.hp=P.max;E.hp=E.max;P.en=Math.min(100,P.en+.5);}
   else if(S.tf%60===0)S.time--;
   if(S.mode!=='train'&&(P.hp<=0||E.hp<=0||S.time<=0)){P.hp=Math.max(0,P.hp);E.hp=Math.max(0,E.hp);endRound();}
  }else if(ph==='ko'){
@@ -1987,6 +2122,7 @@ function uiSync(){
 }
 function draw(){
  uiSync();
+ if(S.mode==='train')trnUpd();
  ctx.imageSmoothingEnabled=false;
  ctx.save();
  if(S.shake>0){ctx.translate(Math.round((Math.random()-.5)*S.shake*2),Math.round((Math.random()-.5)*S.shake*2));}
@@ -2636,6 +2772,7 @@ document.getElementById('gbody').innerHTML=
  '<p><b>Lévitation.</b> Salomon peut flotter : saute, puis appuie encore sur ▲ pour léviter environ 3 secondes. Il avance en l’air, frappe, lance des boules d’énergie, un sort ou même son ultime. ▲ le fait monter un peu, ▼ le fait redescendre. Les coups de pied et les vagues au sol ne l’atteignent pas quand il flotte.</p>'+
  '<p><b>Boutons.</b> COUP est rapide, PIED est lent mais fort. BOULE lance une petite boule d’énergie pour 8 de jauge. SORT coûte 40 de jauge. ULTIME demande la jauge pleine : la scène s’assombrit pendant la charge, puis chaque combattant déchaîne un ultime différent. Si tu es touché pendant la charge, elle est perdue. Selon l’ultime, saute, bouge ou garde pour limiter les dégâts. GARDE bloque presque tous les dégâts reçus de face. Le héros Chronos est le seul à ne pas être figé par le temps arrêté de Cronos.</p>'+
  '<p><b>Aide à la visée.</b> Les coups avancent un peu vers l’adversaire et certains sorts corrigent leur trajectoire. Une touche pressée pendant une attaque est mémorisée un instant : enchaîne sans attendre.</p>'+
+ '<p><b>Entraînement.</b> Le pantin ne riposte pas, sauf si tu choisis FRAPPE ou SAUTE. Les leçons te montrent le bouton à utiliser, qui clignote ; COMBO, MEILLEUR, DÉGÂTS et REÇU suivent tes coups. CHANGER LE PANTIN, JAUGE PLEINE et RESET COMPTEUR t’aident à répéter.</p>'+
  '<p><b>Astuces.</b> Saute pour éviter les vagues au sol. Reste mobile contre les colonnes : elles se préparent avant de frapper. À la dernière manche, achève ton adversaire avec SORT.</p>'+
  [['good','Héros'],['anti','Anti-héros'],['evil','Vilains']].map(function(g){return '<h4>'+g[1]+'</h4><ul>'+CH.filter(function(c){return c.side===g[0];}).map(function(c){return '<li><b style="color:'+c.aura+'">'+c.name+'</b> · '+c.sp.n+' : '+c.sp.d+' Ultime : '+(c.ult||'')+' ('+(c.ud||'')+').</li>';}).join('')+'</ul>';}).join('');
 updSnd();
