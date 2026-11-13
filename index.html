@@ -109,6 +109,7 @@ canvas{display:block;width:100%;height:auto;aspect-ratio:16/9;image-rendering:pi
 .trn button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .trn h4{font-family:var(--px);font-weight:400;font-size:9px;margin:4px 0 0;color:var(--gold)}
 .trn p{margin:0}
+#tLt{white-space:pre-line}
 .trn-dum{font-family:var(--px);font-size:9px;color:var(--gold)}
 .trn-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;text-align:center;color:var(--dim);font-size:14px}
 .trn-stats b{display:block;font-family:var(--px);font-weight:400;font-size:12px;color:var(--ink);margin-top:3px}
@@ -1435,17 +1436,18 @@ function aiIn(f,o){
 var TR={dummy:'still',done:{},lesson:0,hits:0,dmg:0,taken:0,combo:0,best:0,last:-999};
 var TRD=[['still','IMMOBILE'],['block','GARDE'],['jump','SAUTE'],['attack','FRAPPE']];
 var LESSONS=[
- {k:'walk',s:'Avancer et reculer',t:'Avance et recule vers l’adversaire avec ◀ ▶ (flèches ← →).',h:['left','right']},
- {k:'jump',s:'Sauter',t:'Saute avec ▲ (flèche ↑). Pour éviter les vagues au sol, saute.',h:['jump']},
- {k:'crouch',s:'S’accroupir',t:'Accroupis-toi avec ▼ (flèche ↓) : tu évites les coups de poing.',h:['crouch']},
- {k:'punch',s:'COUP',t:'Frappe avec COUP (J). Rapide, portée courte.',h:['punch']},
- {k:'kick',s:'PIED',t:'Frappe avec PIED (K). Plus lent, mais plus fort.',h:['kick']},
- {k:'block',s:'Garder (GARDE)',t:'Le pantin frappe : garde-toi avec GARDE (Espace). Il passe en FRAPPE pour cette leçon.',h:['block']},
- {k:'push',s:'ONDE',t:'ONDE (U) repousse l’adversaire, même s’il garde.',h:['push']},
- {k:'combo',s:'3 coups d’affilée',t:'Enchaîne 3 coups d’affilée, sans attendre entre eux.',h:['punch','kick']},
- {k:'ball',s:'BOULE',t:'BOULE (I) : une énergie envoyée au loin. Coûte 8 de jauge (remplie pour toi).',h:['ball']},
- {k:'special',s:'SORT',t:'SORT (L) : ta capacité propre. Coûte 40 de jauge (remplie pour toi).',h:['special']},
- {k:'ult',s:'ULTIME',t:'ULTIME (O) : ton coup le plus fort. Coûte 100 de jauge (remplie pour toi).',h:['ult']}
+ {k:'goal',s:'Le but du jeu',t:'Le but : fais tomber la vie de l’adversaire avant la fin du temps.',d:'Chaque combattant a une barre de vie en haut de l’écran. Quand elle est vide, il est K.O. Il faut gagner 2 manches pour remporter le match. La petite barre bleue sous la vie est ta jauge : elle se remplit quand tu donnes ou reçois des coups.',h:[]},
+ {k:'walk',s:'Avancer et reculer',t:'Avance et recule vers l’adversaire avec ◀ ▶ (flèches ← →).',d:'Sur téléphone, la croix est en bas à gauche : garde le doigt dessus et glisse. Sur clavier, utilise les flèches. Il faut être assez près de l’adversaire pour le toucher.',h:['left','right']},
+ {k:'jump',s:'Sauter',t:'Saute avec ▲ (flèche ↑).',d:'Un saut évite les vagues qui roulent au sol et les pieds bas. Tu peux aussi sauter en avançant avec ↖ ou ↗ sur la croix.',h:['jump']},
+ {k:'crouch',s:'S’accroupir',t:'Accroupis-toi avec ▼ (flèche ↓).',d:'Accroupi, tu évites les coups de poing et les boules, mais pas les coups de pied. Reste accroupi tant que tu tiens le bouton.',h:['crouch']},
+ {k:'punch',s:'COUP',t:'Frappe avec COUP (J) : rapide, portée courte.',d:'Le bouton COUP est rouge, à droite de l’écran sur téléphone. COUP part vite, idéal pour enchaîner.',h:['punch']},
+ {k:'kick',s:'PIED',t:'Frappe avec PIED (K) : plus lent, mais plus fort.',d:'Le bouton PIED est doré. Il met plus de temps à partir mais fait davantage de dégâts et repousse plus loin.',h:['kick']},
+ {k:'block',s:'Garder (GARDE)',t:'Garde-toi avec GARDE (Espace) quand le pantin frappe.',d:'Maintiens GARDE pour bloquer : GARDE bloque presque tous les dégâts reçus de face. Le pantin passe en FRAPPE pour cette leçon.',h:['block']},
+ {k:'push',s:'ONDE',t:'ONDE (U) repousse l’adversaire, même s’il garde.',d:'ONDE est une onde de choc devant toi. Elle repousse l’adversaire même s’il garde, détruit les petits projectiles proches et casse les objets du décor.',h:['push']},
+ {k:'combo',s:'3 coups d’affilée',t:'Enchaîne 3 coups d’affilée (COUP ou PIED).',d:'Un combo, c’est plusieurs coups qui touchent sans pause longue. Le compteur COMBO monte à chaque coup. Frappe, avance d’un pas, puis frappe encore.',h:['punch','kick']},
+ {k:'ball',s:'BOULE',t:'BOULE (I) : une énergie envoyée au loin.',d:'BOULE coûte 8 de jauge (remplie pour toi ici). Elle touche l’adversaire même à distance. Pratique pour le garder à distance.',h:['ball']},
+ {k:'special',s:'SORT',t:'SORT (L) : ta capacité propre.',d:'SORT coûte 40 de jauge (remplie pour toi ici). Chaque combattant a le sien, décrit dans la liste COUPS DE ci-dessous.',h:['special']},
+ {k:'ult',s:'ULTIME',t:'ULTIME (O) : ton coup le plus fort.',d:'ULTIME demande la jauge pleine (100), remplie pour toi ici. La scène s’assombrit pendant la charge : si tu es touché pendant la charge, elle est perdue.',h:['ult']}
 ];
 var TRH={left:'#dpad button:nth-child(4)',right:'#dpad button:nth-child(6)',jump:'#dpad button:nth-child(2)',crouch:'#dpad button:nth-child(5)',punch:'[data-k=punch]',kick:'[data-k=kick]',block:'[data-k=block]',push:'[data-k=push]',ball:'[data-k=ball]',special:'[data-k=special]',ult:'[data-k=ult]'};
 function trnCur(){var i=LESSONS.findIndex(function(l){return !TR.done[l.k];});return i<0?LESSONS.length:i;}
@@ -1457,7 +1459,7 @@ function trnReset(){
   '<li><b>COUP (J)</b> rapide, portée courte.</li>'+
   '<li><b>PIED (K)</b> lent, plus fort, touche plus bas.</li>'+
   '<li><b>ONDE (U)</b> repousse l’adversaire, même en garde.</li>'+
-  '<li><b>GARDE (Espace)</b> réduit les dégâts. Un coup de pied ou un sort peut encore passer.</li>'+
+  '<li><b>GARDE (Espace)</b> bloque presque tous les dégâts reçus de face.</li>'+
   '<li><b>BOULE (I)</b> projectile à distance, 8 de jauge.</li>'+
   '<li><b>SORT (L) : '+c.sp.n+'</b>, 40 de jauge. '+c.sp.d+'</li>'+
   '<li><b>ULTIME (O) : '+c.ult+'</b>, 100 de jauge. '+(c.ud||'')+'</li>';
@@ -1490,6 +1492,7 @@ function trnTick(){
 function trnTrack(p){
  var d=TR.done;
  if(p.l||p.r)d.walk=1;
+ if(TR.hits>0)d.goal=1;
  if(p.jump)d.jump=1;
  if(P.crouch)d.crouch=1;
  if(p.punch)d.punch=1;
@@ -1512,7 +1515,7 @@ function trnUpd(){
  set('tC',TR.combo);set('tB',TR.best);set('tD',TR.dmg);set('tH',TR.hits);set('tT',TR.taken);
  dl=(L&&L.k==='block')?'FRAPPE (leçon)':TRD.filter(function(d){return d[0]===TR.dummy;})[0][1];
  set('trnDum','PANTIN : '+dl);
- set('tLt',L?(cur+1)+'/'+LESSONS.length+' · '+L.t:'Toutes les leçons sont faites. Entraîne-toi librement, ou clique RECOMMENCER.');
+ set('tLt',L?(cur+1)+'/'+LESSONS.length+' · '+L.t+(L.d?'\n'+L.d:''):'Toutes les leçons sont faites. Entraîne-toi librement, ou clique RECOMMENCER.');
  key=cur+'|'+LESSONS.map(function(l){return TR.done[l.k]?1:0;}).join('');
  if(key!==trnKey){
   trnKey=key;
