@@ -1449,6 +1449,20 @@ var LESSONS=[
  {k:'special',s:'SORT',t:'SORT (L) : ta capacité propre.',d:'SORT coûte 40 de jauge (remplie pour toi ici). Chaque combattant a le sien, décrit dans la liste COUPS DE ci-dessous.',h:['special']},
  {k:'ult',s:'ULTIME',t:'ULTIME (O) : ton coup le plus fort.',d:'ULTIME demande la jauge pleine (100), remplie pour toi ici. La scène s’assombrit pendant la charge : si tu es touché pendant la charge, elle est perdue.',h:['ult']}
 ];
+var LESSON_HOW={
+ goal:'Bouger : ◀ ▶ (flèches ← →).\nAttaquer : COUP (J) ou PIED (K), quand l’adversaire est à portée.',
+ walk:'Bouger : ◀ ▶ (← →). Maintiens la touche pour avancer ou reculer.\nAttaquer : pas encore, on verra ça plus loin.',
+ jump:'Bouger : ▲ (↑) pour sauter sur place, ↖ ou ↗ pour sauter en avançant.\nAttaquer : aucun pour l’instant.',
+ crouch:'Bouger : maintiens ▼ (↓) pour rester accroupi.\nAttaquer : accroupi, COUP et PIED partent plus bas.',
+ punch:'Bouger : ◀ ▶ pour te rapprocher jusqu’à être à portée.\nAttaquer : COUP (J), bouton rouge.',
+ kick:'Bouger : ◀ ▶ pour te rapprocher.\nAttaquer : PIED (K), bouton doré. Plus lent, mais plus fort.',
+ block:'Défendre : maintiens GARDE (Espace), bouton violet. Tant que tu la maintiens, tu ne peux ni bouger ni attaquer au sol.\nRelâche GARDE pour bouger à nouveau.',
+ push:'Bouger : ◀ ▶ pour te placer devant l’adversaire.\nAttaquer : ONDE (U), bouton mauve. Au sol uniquement : pas en sautant.',
+ combo:'Bouger : ◀ ▶ entre les coups, pour rester à portée.\nAttaquer : par exemple COUP (J), COUP (J), puis PIED (K).',
+ ball:'Bouger : ◀ ▶ pour rester à distance.\nAttaquer : BOULE (I), bouton vert d’eau. Elle part dans ta direction.',
+ special:'Bouger : ◀ ▶ pour te placer.\nAttaquer : SORT (L), bouton bleu clair. Son effet dépend de ton combattant (voir la liste en bas).',
+ ult:'Bouger : tu restes sur place pendant la charge.\nAttaquer : ULTIME (O), bouton orange, jauge pleine.'
+};
 var TRH={left:'#dpad button:nth-child(4)',right:'#dpad button:nth-child(6)',jump:'#dpad button:nth-child(2)',crouch:'#dpad button:nth-child(5)',punch:'[data-k=punch]',kick:'[data-k=kick]',block:'[data-k=block]',push:'[data-k=push]',ball:'[data-k=ball]',special:'[data-k=special]',ult:'[data-k=ult]'};
 function trnCur(){var i=LESSONS.findIndex(function(l){return !TR.done[l.k];});return i<0?LESSONS.length:i;}
 function trnReset(){
@@ -1515,7 +1529,7 @@ function trnUpd(){
  set('tC',TR.combo);set('tB',TR.best);set('tD',TR.dmg);set('tH',TR.hits);set('tT',TR.taken);
  dl=(L&&L.k==='block')?'FRAPPE (leçon)':TRD.filter(function(d){return d[0]===TR.dummy;})[0][1];
  set('trnDum','PANTIN : '+dl);
- set('tLt',L?(cur+1)+'/'+LESSONS.length+' · '+L.t+(L.d?'\n'+L.d:''):'Toutes les leçons sont faites. Entraîne-toi librement, ou clique RECOMMENCER.');
+ set('tLt',L?(cur+1)+'/'+LESSONS.length+' · '+L.t+(L.d?'\n'+L.d:'')+'\n'+(LESSON_HOW[L.k]||''):'Toutes les leçons sont faites. Entraîne-toi librement, ou clique RECOMMENCER.');
  key=cur+'|'+LESSONS.map(function(l){return TR.done[l.k]?1:0;}).join('');
  if(key!==trnKey){
   trnKey=key;
