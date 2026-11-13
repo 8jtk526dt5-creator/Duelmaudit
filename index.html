@@ -1821,7 +1821,7 @@ function stepCore(){
   if(S.t>=130)afterKO();
  }else if(ph==='finish'){
   upd(P,NEUT,E);upd(E,NEUT,P);
-  if(press.special||press.punch||press.kick){
+  if(press.special||press.punch||press.kick||press.push||press.ball||press.ult){
    clearPress();
    S.phase='finisher';S.t=0;
    P.atk={type:'special',t:0,hit:true,su:14,ac:1,tot:90,dmg:0,rng:0,y1:0,y2:0,kb:0,st:0,snd:0};
@@ -2375,7 +2375,7 @@ function draw(){
   txt(S.koText,96,38,16,'#ff3b4e','center');
  }else if(ph==='finish'){
   txt('ACHEVE-LE!',96,34,16,(S.t>>3)&1?'#ff3b4e':'#f2c14e','center');
-  txt('Appuie sur SORT',96,56,8,'#f1e9ff','center');
+  txt('Frappe pour achever',96,56,8,'#f1e9ff','center');
  }else if(ph==='finisher'&&S.t>=20){
   txt('EXORCISME',96,38,16,'#5ee0ff','center');
  }
