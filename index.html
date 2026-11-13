@@ -118,8 +118,8 @@ canvas{display:block;width:100%;height:auto;aspect-ratio:16/9;image-rendering:pi
 .trn li.done{color:#7affd8}
 .trn li.cur{color:var(--gold)}
 .trn li b{font-weight:400;color:var(--ink)}
-.pad button.hint{outline:2px solid var(--gold);outline-offset:2px;animation:tr-blink .6s steps(2,jump-none) infinite}
-@keyframes tr-blink{50%{outline-color:transparent}}
+.pad button.hint{outline:3px solid var(--gold);outline-offset:3px;animation:tr-blink .5s steps(2,jump-none) infinite}
+@keyframes tr-blink{50%{background:var(--gold);color:#0d0716;outline-color:#fff}}
 .pz{display:none;position:absolute;top:13%;left:50%;transform:translateX(-50%);width:34px;height:28px;font-size:13px;color:var(--ink);background:rgba(27,16,48,.65);border:2px solid #4a2f85;cursor:pointer;padding:0;z-index:3}
 @media (orientation:landscape) and (max-height:620px){
  body{padding:0}
@@ -1436,7 +1436,7 @@ function aiIn(f,o){
 var TR={dummy:'still',done:{},lesson:0,hits:0,dmg:0,taken:0,combo:0,best:0,last:-999};
 var TRD=[['still','IMMOBILE'],['block','GARDE'],['jump','SAUTE'],['attack','FRAPPE']];
 var LESSONS=[
- {k:'goal',s:'Le but du jeu',t:'Le but : fais tomber la vie de l’adversaire avant la fin du temps.',d:'Chaque combattant a une barre de vie en haut de l’écran. Quand elle est vide, il est K.O. Il faut gagner 2 manches pour remporter le match. La petite barre bleue sous la vie est ta jauge : elle se remplit quand tu donnes ou reçois des coups.',h:[]},
+ {k:'goal',s:'Le but du jeu',t:'Le but : fais tomber la vie de l’adversaire avant la fin du temps.',d:'Chaque combattant a une barre de vie en haut de l’écran. Quand elle est vide, il est K.O. Il faut gagner 2 manches pour remporter le match. La petite barre bleue sous la vie est ta jauge : elle se remplit quand tu donnes ou reçois des coups.',h:['left','right','punch','kick']},
  {k:'walk',s:'Avancer et reculer',t:'Avance et recule vers l’adversaire avec ◀ ▶ (flèches ← →).',d:'Sur téléphone, la croix est en bas à gauche : garde le doigt dessus et glisse. Sur clavier, utilise les flèches. Il faut être assez près de l’adversaire pour le toucher.',h:['left','right']},
  {k:'jump',s:'Sauter',t:'Saute avec ▲ (flèche ↑).',d:'Un saut évite les vagues qui roulent au sol et les pieds bas. Tu peux aussi sauter en avançant avec ↖ ou ↗ sur la croix.',h:['jump']},
  {k:'crouch',s:'S’accroupir',t:'Accroupis-toi avec ▼ (flèche ↓).',d:'Accroupi, tu évites les coups de poing et les boules, mais pas les coups de pied. Reste accroupi tant que tu tiens le bouton.',h:['crouch']},
