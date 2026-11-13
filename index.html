@@ -1479,7 +1479,7 @@ function trnIn(){
 function trnTick(){
  var dd=E.max-E.hp,tk=P.max-P.hp,L;
  TR.lesson=trnCur();L=LESSONS[TR.lesson];
- if(dd>0){TR.hits++;TR.dmg+=dd;TR.combo=(FR-TR.last<=45)?TR.combo+1:1;TR.last=FR;if(TR.combo>TR.best)TR.best=TR.combo;}
+ if(dd>0){popTxt(E.x-6,E.y-44,'-'+dd,'#ffd84a');TR.hits++;TR.dmg+=dd;TR.combo=(FR-TR.last<=45)?TR.combo+1:1;TR.last=FR;if(TR.combo>TR.best)TR.best=TR.combo;}
  else if(FR-TR.last>45)TR.combo=0;
  if(tk>0)TR.taken+=tk;
  if(TR.combo>=3)TR.done.combo=1;
@@ -2346,7 +2346,7 @@ function draw(){
  ctx.drawImage(VIG,0,0);
  if(S.phase==='title')return;
  hud();
- if(S.mode==='train')txt('ENTRAINEMENT',96,38,6,'#9a8bb8','center');
+ if(S.mode==='train'){txt('ENTRAINEMENT',96,38,6,'#9a8bb8','center');txt('DEGATS '+TR.dmg+(TR.combo>1?'  COMBO x'+TR.combo:''),96,47,6,'#f2c14e','center');}
  if(S.cast&&S.cast.t>0&&(S.phase==='fight'||S.phase==='ko')){txt(S.cast.name,S.cast.left?6:186,46,8,S.cast.col,S.cast.left?'left':'right');}
  var ph=S.phase;
  if(ph==='intro'){
